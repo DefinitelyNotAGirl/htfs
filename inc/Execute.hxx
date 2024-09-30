@@ -6,6 +6,7 @@
 #include <cstring>     // For strcpy
 #include <iostream>
 #include "stdint.hxx"
+#include <chrono>
 #include <dlfcn.h>
 
 inline u32 GetUnixTimestamp() {

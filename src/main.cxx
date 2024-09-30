@@ -174,6 +174,7 @@ std::vector<char> GetExtendedAttribute(const std::string& path, const std::strin
     }
     return value;
 }
+#define ENOATTR ENODATA
 #endif
 static std::string GetOriginalClientPath(const std::string& file,const std::string& client_ip) {
 	try {
