@@ -5,23 +5,6 @@
 #include <util.hxx>
 #include <JSON.hxx>
 #include <async.hxx>
-#ifdef platform_linux
-	uint64_t htonll(uint64_t value) {
-	    if (__BYTE_ORDER == __LITTLE_ENDIAN) {
-	        return ((uint64_t)htonl(value & 0xFFFFFFFF) << 32) | htonl(value >> 32);
-	    } else {
-	        return value;
-	    }
-	}
-	
-	uint64_t ntohll(uint64_t value) {
-	    if (__BYTE_ORDER == __LITTLE_ENDIAN) {
-	        return ((uint64_t)ntohl(value & 0xFFFFFFFF) << 32) | ntohl(value >> 32);
-	    } else {
-	        return value;
-	    }
-	}
-#endif
 
 namespace events {
 	namespace __private {
