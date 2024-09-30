@@ -160,14 +160,14 @@ void SetExtendedAttribute(const std::string& path, const std::string& attribute_
         throw std::runtime_error("Error setting extended attribute");
     }
 }
-std::vector<char> GetExtendedAttribute(const std::string& path, const std::string& attribute_name) {
+std::vector<u8> GetExtendedAttribute(const std::string& path, const std::string& attribute_name) {
     // First, get the size of the extended attribute
     ssize_t size = getxattr(path.c_str(), attribute_name.c_str(), nullptr, 0);
     if (size == -1) {
         throw std::runtime_error("Error getting size of extended attribute");
     }
     // Allocate buffer and retrieve the attribute
-    std::vector<char> value(size);
+    std::vector<u8> value(size);
     ssize_t result = getxattr(path.c_str(), attribute_name.c_str(), value.data(), value.size());
     if (result == -1) {
         throw std::runtime_error("Error getting extended attribute");
