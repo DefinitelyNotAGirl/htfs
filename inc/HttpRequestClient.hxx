@@ -75,18 +75,25 @@ public:
 	    http_request << "\r\n";  // End of headers
 	    // Send headers and body (in chunks)
 	    std::string request_headers = http_request.str();
+		std::cout << "debug 0" << std::endl;
 	    write(sockfd, request_headers.c_str(), request_headers.length());
 	    if (!request.body.empty()) {
 	        write(sockfd, reinterpret_cast<const char*>(request.body.data()), request.body.size());
 	    }
 	    // Receive response
 	    char buffer[8192];
-	    int bytes_read;
+	    int bytes_read = 0;
 	    std::ostringstream response_stream;
+		std::cout << "sockfd: " << sockfd << std::endl;
+		std::cout << "buffer: " << buffer << std::endl;
+		std::cout << "sizeof(buffer): " << sizeof(buffer) << std::endl;
 	    while ((bytes_read = read(sockfd, buffer, sizeof(buffer))) > 0) {
+			std::cout << "bytes read: " << bytes_read << std::endl;
 	        response_stream.write(buffer, bytes_read);
 	    }
+		std::cout << "bytes read: " << bytes_read << std::endl;
 	    close(sockfd);
+		std::cout << "debug 1" << std::endl;
 	    // Parse the response
 	    std::string response_str = response_stream.str();
 	    HttpResponse response;

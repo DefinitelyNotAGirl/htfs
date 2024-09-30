@@ -1,4 +1,5 @@
 #pragma once
 #include <stdint.hxx>
+#include <sys/types.h>  // for pid_t
 typedef void(*async_function)();
-void async(async_function func, u64 microsecondDelay = 0);
+pid_t async(async_function func, u64 microsecondDelay = 0);
