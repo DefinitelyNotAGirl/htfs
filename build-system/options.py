@@ -19,7 +19,7 @@ args_linker = "-Llib/ -lc -lstdc++ -lcargparse -lbacktrace -g -rdynamic"
 #+
 if(platform.system() == "Darwin"):
 	compiler_cxx = "homebrew-clang++"
-	args_cxx = "-std=c++20 -g -Wno-write-strings -pedantic -Wno-multichar -Wunreachable-code -Wno-pointer-arith -fpermissive -I/opt/homebrew/opt/openssl@3/include -I/opt/homebrew/include -I/opt/homebrew/opt/mariadb-connector-c/include -Iinc/ -g -c -fdiagnostics-color -Dplatform_apple"
+	args_cxx = "-std=c++20 -g -Wno-write-strings -Wno-error=narrowing -pedantic -Wno-multichar -Wunreachable-code -Wno-pointer-arith -fpermissive -I/opt/homebrew/opt/openssl@3/include -I/opt/homebrew/include -I/opt/homebrew/opt/mariadb-connector-c/include -Iinc/ -g -c -fdiagnostics-color -Dplatform_apple"
 	compiler_c = "homebrew-clang"
 	assembler = "nasm"
 	linker = "homebrew-clang++"

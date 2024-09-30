@@ -15,6 +15,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <async.hxx>
 class HttpRequestClient {
 	virtual u16 DefaultPort(){return 80;}
 	void parse_url(const std::string& url, std::string& host, int& port, std::string& path) {
@@ -87,12 +94,33 @@ public:
 		//std::cout << "sockfd: " << sockfd << std::endl;
 		//std::cout << "buffer: " << buffer << std::endl;
 		//std::cout << "sizeof(buffer): " << sizeof(buffer) << std::endl;
-		std::cout << "starting http read" << std::endl;
-	    while ((bytes_read = read(sockfd, buffer, sizeof(buffer))) > 0) {
-			//std::cout << "bytes read: " << bytes_read << std::endl;
-	        response_stream.write(buffer, bytes_read);
-	    }
-		std::cout << "finished http read" << std::endl;
+		//std::cout << "starting http read" << std::endl;
+		struct timeoutdata {
+			char** buffer;
+			int* bytes_read;
+			std::ostringstream* response_stream;
+			int* sockfd;
+			int bufferSize;
+		};
+		timeoutdata td; {
+			td.buffer = (char**)&buffer;
+			td.bytes_read = &bytes_read;
+			td.response_stream = &response_stream;
+			td.sockfd = &sockfd;
+			td.bufferSize = sizeof(buffer);
+		}
+		pid_t rtid = async([](void* td){
+			while ((*(((timeoutdata*)td)->bytes_read) = read(*(((timeoutdata*)td)->sockfd), *(((timeoutdata*)td)->buffer), (((timeoutdata*)td)->bufferSize))) > 0) {
+				//std::cout << "bytes read: " << bytes_read << std::endl;
+	    	    (((timeoutdata*)td)->response_stream)->write(*(((timeoutdata*)td)->buffer), *(((timeoutdata*)td)->bytes_read));
+	    	}
+		},0,&td);
+		async([](void* tid){
+			kill((pid_t)(intptr_t)tid,SIGTERM);
+		},2000,(void*)rtid);
+		int status;
+		waitpid(rtid,&status,0);
+		//std::cout << "finished http read" << std::endl;
 		//std::cout << "bytes read: " << bytes_read << std::endl;
 	    close(sockfd);
 		//std::cout << "debug 1" << std::endl;

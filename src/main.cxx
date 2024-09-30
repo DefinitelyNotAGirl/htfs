@@ -524,10 +524,10 @@ void start_http_server(int port) {
         	HttpResponse response = OnHttpRequest(client_ip, method, url, headers, query_params, body, content_length);
         	// Send the response to the client
         	std::vector<u8> http_response = response.to_binary();
-			std::cout << "sending http response" << std::endl;
+			//std::cout << "sending http response" << std::endl;
         	send(new_socket, http_response.data(), http_response.size(), 0);
-			std::cout << "finished sending http response" << std::endl;
-			//if (body) delete[] static_cast<char*>(body);
+			//std::cout << "finished sending http response" << std::endl;
+			if (body) delete[] static_cast<char*>(body);
         	close(new_socket);
 		} catch(std::runtime_error e) {
 			std::cerr << "\x1b[31mruntime error: " << e.what() <<"\x1b[0m"<< std::endl;

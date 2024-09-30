@@ -25,7 +25,7 @@ namespace events {
 				std::cout << "connecting to twitch EventSub server..." << std::endl;
 				if(websocket.connect()) {
 					std::cout << "[OK] connected to twitch EventSub server" << std::endl;
-					async([]{
+					async([](void*){
 						websocket.listen();
 					});
 				} else {
