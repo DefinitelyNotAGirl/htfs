@@ -207,7 +207,7 @@ static bool ProcessRequest(HttpResponse& response,const std::string& client_ip, 
 		std::string ClientPath = "";
 		response.status_code = 201;
 		response.reason_phrase = std::filesystem::exists(ServerPath) ? "UPDATED" : "CREATED";
-		response.body.clear();
+		response.body = StringToByteVector("file uploaded to server");
 		try {
 			ClientPath = headers.at("original-path");
 		}catch(std::out_of_range){}
