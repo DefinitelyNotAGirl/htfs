@@ -12,6 +12,9 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <HTTP.hxx>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
 class HttpRequestClient {
 	virtual u16 DefaultPort(){return 80;}
 	void parse_url(const std::string& url, std::string& host, int& port, std::string& path) {
@@ -52,9 +55,9 @@ public:
 	    if (sockfd < 0) {
 	        throw std::runtime_error("Error creating socket: "+std::string(strerror(errno)));
 	    }
-	    bzero((char*)&server_addr, sizeof(server_addr));
+	    memset((char*)&server_addr,0, sizeof(server_addr));
 	    server_addr.sin_family = AF_INET;
-	    bcopy((char*)server->h_addr, (char*)&server_addr.sin_addr.s_addr, server->h_length);
+		memcpy((char*)server->h_addr, (char*)&server_addr.sin_addr.s_addr, server->h_length);
 	    server_addr.sin_port = htons(port);
 	    if (connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
 	        throw std::runtime_error("Error connecting to server: "+std::string(strerror(errno)));
