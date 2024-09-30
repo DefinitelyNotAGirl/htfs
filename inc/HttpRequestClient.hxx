@@ -75,7 +75,7 @@ public:
 	    http_request << "\r\n";  // End of headers
 	    // Send headers and body (in chunks)
 	    std::string request_headers = http_request.str();
-		std::cout << "debug 0" << std::endl;
+		//std::cout << "debug 0" << std::endl;
 	    write(sockfd, request_headers.c_str(), request_headers.length());
 	    if (!request.body.empty()) {
 	        write(sockfd, reinterpret_cast<const char*>(request.body.data()), request.body.size());
@@ -87,10 +87,12 @@ public:
 		//std::cout << "sockfd: " << sockfd << std::endl;
 		//std::cout << "buffer: " << buffer << std::endl;
 		//std::cout << "sizeof(buffer): " << sizeof(buffer) << std::endl;
+		std::cout << "starting http read" << std::endl;
 	    while ((bytes_read = read(sockfd, buffer, sizeof(buffer))) > 0) {
 			//std::cout << "bytes read: " << bytes_read << std::endl;
 	        response_stream.write(buffer, bytes_read);
 	    }
+		std::cout << "finished http read" << std::endl;
 		//std::cout << "bytes read: " << bytes_read << std::endl;
 	    close(sockfd);
 		//std::cout << "debug 1" << std::endl;
