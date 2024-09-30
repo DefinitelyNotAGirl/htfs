@@ -19,6 +19,7 @@
 #include <fmt/core.h>
 #include <sys/xattr.h>
 #include <stdexcept>
+#include <stacktrace.hxx>
 
 //+
 //+
@@ -549,6 +550,7 @@ public:
 };
 
 void UploadFile(HttpRequestClient& client,std::string ClientPath,std::string ServerPath) {
+	std::cout << "uploading file: " << ClientPath << std::endl;
 	HttpRequest request;
 	{
 		// Open the file in binary mode
@@ -568,15 +570,19 @@ void UploadFile(HttpRequestClient& client,std::string ClientPath,std::string Ser
 	}
 	request.headers.insert({"original-path",ClientPath});
 	request.method = "POST";
-	request.url = "192.168.178.102/"+ServerPath;
+	std::cout << "Server path: " << ServerPath << std::endl;
+	std::cout << "url: " << request.url << std::endl;
+	std::cout << "url.size(): " << request.url.size() << std::endl;
+	std::cout << "ServerPath.size(): " << ServerPath.size() << std::endl;
+	request.url = std::string("192.168.178.102/")+std::string(ServerPath);
 	//std::cout << "Client path: " << ClientPath << std::endl;
-	//std::cout << "Server path: " << ServerPath << std::endl;
+	std::cout << "\x1B[34mUPLOAD \x1B[35m" << ClientPath << "\x1B[0m...";
 	HttpResponse response = client.Send(request);
-	std::cout << "UPLOAD " << ClientPath << " ";
+	std::cout << "\b\b\b ";
 	if(response.status_code >= 200 && response.status_code < 300)std::cout << "\x1B[32m";
 	else if(response.status_code >= 300 && response.status_code < 400)std::cout << "\x1B[33m";
 	else if(response.status_code >= 400 && response.status_code < 600)std::cout << "\x1B[31m";
-	std::cout << response.status_code << " " << response.reason_phrase << std::endl;
+	std::cout << response.status_code << " " << response.reason_phrase << "\x1B[0m" << std::endl;;
 }
 
 void UploadDirectory(HttpRequestClient& client,std::string ClientPath,std::string ServerPath) {
@@ -595,18 +601,20 @@ void DownloadFile(HttpRequestClient& client,std::string& ServerPath) {
 	HttpRequest request;
 	request.method = "GET";
 	request.url = "192.168.178.102/"+ServerPath;
+	std::cout << "\x1B[34mDOWNLOAD \x1B[35m" << ServerPath << "\x1B[0m...";
 	HttpResponse response = client.Send(request);
-	std::cout << "DOWNLOAD " << ServerPath << " ";
+	std::cout << "\b\b\b ";
 	if(response.status_code >= 200 && response.status_code < 300)std::cout << "\x1B[32m";
 	else if(response.status_code >= 300 && response.status_code < 400)std::cout << "\x1B[33m";
 	else if(response.status_code >= 400 && response.status_code < 600)std::cout << "\x1B[31m";
-	std::cout << response.status_code << " " << response.reason_phrase << std::endl;
+	std::cout << response.status_code << " " << response.reason_phrase;
 	if(response.status_code == 200) {
-		std::cout << "original path: " << response.headers.at("original-path") << std::endl;
+		std::cout << "\x1B[0m ==> \x1B[36m" << response.headers.at("original-path");
 		FILE* f = fopen(response.headers.at("original-path").c_str(),"w");
 		fwrite(response.body.data()+2,response.body.size()-2,1,f);
 		fclose(f);
 	}
+	std::cout << "\x1B[0m" << std::endl;
 }
 
 

@@ -6,9 +6,10 @@
 #include <vector>
 
 // Define HttpRequest struct with binary body
-struct HttpRequest {
-    std::string method;
-    std::string url;
+class HttpRequest {
+public:
+    std::string method = "";
+    std::string url = "";
     std::map<std::string, std::string> headers;
     std::vector<uint8_t> body;  // Binary body data
 	u64 RetryCounter = 0;

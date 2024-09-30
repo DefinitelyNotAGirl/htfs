@@ -20,6 +20,8 @@ def cpp(src: str, out: str, tcurrent: int, tmax: int) -> int:
 		ExitCode = os.system(options.compiler_cxx+" -o "+out.replace("/","\\")+" "+src.replace("/","\\")+" -MD -MF "+out.replace("/","\\")+".d "+options.args_cxx+" &> .\\build\\.stdout")
 	elif options.compiler_cxx == "clang++":
 		ExitCode = os.system(options.compiler_cxx+" -o "+out+" "+src+" -MD -MF "+out+".d "+options.args_cxx+" &> ./build/.stdout")
+	else:
+		ExitCode = os.system(options.compiler_cxx+" -o "+out+" "+src+" -MD -MF "+out+".d "+options.args_cxx+" &> ./build/.stdout")
 	print("\033[1F",end='')
 	if ExitCode != 0:
 		print(" \033[31m\u25CB\033[0m",src,"(",tcurrent,"/",tmax,")")
