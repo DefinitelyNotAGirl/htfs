@@ -55,12 +55,12 @@ public:
 	    if (sockfd < 0) {
 	        throw std::runtime_error("Error creating socket: "+std::string(strerror(errno)));
 	    }
-	    memset((char*)&server_addr,0, sizeof(server_addr));
+	    memset((void*)&server_addr,0, sizeof(server_addr));
 	    server_addr.sin_family = AF_INET;
-		memcpy((char*)server->h_addr, (char*)&server_addr.sin_addr.s_addr, server->h_length);
+		memcpy((void*)&server_addr.sin_addr.s_addr,(void*)server->h_addr,server->h_length);
 	    server_addr.sin_port = htons(port);
 	    if (connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-	        throw std::runtime_error("Error connecting to server: "+std::string(strerror(errno)));
+	        throw std::runtime_error("Error connecting to "+host+":"+std::to_string(port)+" "+std::string(strerror(errno)));
 	    }
 	    // Build HTTP request with binary data in the body
 	    std::ostringstream http_request;

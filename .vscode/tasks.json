@@ -2,9 +2,9 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Compile C++ Server",
+			"label": "Compile",
 			"command": "python",
-			"args": ["run_debug.py"],
+			"args": ["build-system/main.py","debug"],
 			"problemMatcher": "$gcc",
 			"type": "shell",
 			"icon": {

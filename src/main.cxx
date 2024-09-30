@@ -425,9 +425,10 @@ void* read_body(int socket, u64 content_length, u64& bytes_read) {
             delete[] body;
             return nullptr;
         } else if (read_result == 0) {
-            std::cerr << "Client closed the connection prematurely\n";
-            delete[] body;
-            return nullptr;
+			if(body) {
+				delete[] body;
+			}
+            throw std::runtime_error("Client closed the connection prematurely");
         }
 
         // Update the number of bytes read
@@ -476,62 +477,58 @@ void start_http_server(int port) {
     std::cout << "HTTP Server listening on port " << port << std::endl;
 
     while (true) {
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
-            perror("Accept failed");
-            exit(EXIT_FAILURE);
-        }
-		set_socket_nodelay(new_socket);
-
-        // Get the client's address dynamically
-        struct sockaddr_in client_address;
-        socklen_t client_len = sizeof(client_address);
-        if (getpeername(new_socket, (struct sockaddr *)&client_address, &client_len) == -1) {
-            perror("Failed to get client address");
-            exit(EXIT_FAILURE);
-        }
-        char client_ip[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &(client_address.sin_addr), client_ip, INET_ADDRSTRLEN);
-
-        // Read the HTTP request from the SSL connection
-        std::string raw_request = read_http_request(new_socket);
-
-        // Parse the request (split headers and body)
-        std::string header_part = raw_request.substr(0, raw_request.find("\r\n\r\n"));
-        std::map<std::string, std::string> headers = parse_headers(header_part);
-
-        // Parse the HTTP method and URL
-        std::istringstream request_stream(raw_request);
-        std::string method, url, version;
-        request_stream >> method >> url >> version;
-
-        // Parse query parameters
-        std::map<std::string, std::string> query_params = parse_query_params(url);
-
-        //Check for Content-Length to determine if a body exists
-    	u64 content_length = headers.count("Content-Length") ? std::stoull(headers["Content-Length"]) : 0;
-		u64 bOffset = raw_request.find("\r\n\r\n")+4;
-		u64 bytes_read = (raw_request.length())-(bOffset);
-    	void* body;
-    	if ((content_length-bytes_read) > 0) {
-    	    body = read_body(new_socket, content_length, bytes_read);
-    	} else {
-			body = new u8[content_length+1];
+		try {
+			if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
+        	    perror("Accept failed");
+        	    exit(EXIT_FAILURE);
+        	}
+			set_socket_nodelay(new_socket);
+        	// Get the client's address dynamically
+        	struct sockaddr_in client_address;
+        	socklen_t client_len = sizeof(client_address);
+        	if (getpeername(new_socket, (struct sockaddr *)&client_address, &client_len) == -1) {
+        	    perror("Failed to get client address");
+        	    exit(EXIT_FAILURE);
+        	}
+        	char client_ip[INET_ADDRSTRLEN];
+        	inet_ntop(AF_INET, &(client_address.sin_addr), client_ip, INET_ADDRSTRLEN);
+        	// Read the HTTP request from the SSL connection
+        	std::string raw_request = read_http_request(new_socket);
+        	// Parse the request (split headers and body)
+        	std::string header_part = raw_request.substr(0, raw_request.find("\r\n\r\n"));
+        	std::map<std::string, std::string> headers = parse_headers(header_part);
+        	// Parse the HTTP method and URL
+        	std::istringstream request_stream(raw_request);
+        	std::string method, url, version;
+        	request_stream >> method >> url >> version;
+        	// Parse query parameters
+        	std::map<std::string, std::string> query_params = parse_query_params(url);
+        	//Check for Content-Length to determine if a body exists
+    		u64 content_length = headers.count("Content-Length") ? std::stoull(headers["Content-Length"]) : 0;
+			u64 bOffset = raw_request.find("\r\n\r\n")+4;
+			u64 bytes_read = (raw_request.length())-(bOffset);
+    		void* body;
+    		if ((content_length-bytes_read) > 0) {
+    		    body = read_body(new_socket, content_length, bytes_read);
+    		} else {
+				body = new u8[content_length+1];
+			}
+			//std::cout << "body: " << body << std::endl;
+			//std::cout << "src: " << (void*)(raw_request.c_str()+bOffset) << std::endl;
+			//std::cout << "src: " << (size_t)(raw_request.length())-(bOffset) << std::endl;
+			memcpy(body,(void*)(raw_request.c_str()+bOffset),(raw_request.length())-(bOffset));
+			//u64 content_length = raw_request.size()-bOffset;
+        	// Call the request handler
+        	HttpResponse response = OnHttpRequest(client_ip, method, url, headers, query_params, body, content_length);
+        	// Send the response to the client
+        	std::vector<u8> http_response = response.to_binary();
+        	send(new_socket, http_response.data(), http_response.size(), 0);
+			//if (body) delete[] static_cast<char*>(body);
+        	close(new_socket);
+		} catch(std::runtime_error e) {
+			std::cerr << "\x1b[31mruntime error: " << e.what() <<"\x1b[0m"<< std::endl;
+			close(new_socket);
 		}
-		//std::cout << "body: " << body << std::endl;
-		//std::cout << "src: " << (void*)(raw_request.c_str()+bOffset) << std::endl;
-		//std::cout << "src: " << (size_t)(raw_request.length())-(bOffset) << std::endl;
-		memcpy(body,(void*)(raw_request.c_str()+bOffset),(raw_request.length())-(bOffset));
-		//u64 content_length = raw_request.size()-bOffset;
-
-        // Call the request handler
-        HttpResponse response = OnHttpRequest(client_ip, method, url, headers, query_params, body, content_length);
-
-        // Send the response to the client
-        std::vector<u8> http_response = response.to_binary();
-        send(new_socket, http_response.data(), http_response.size(), 0);
-
-		//if (body) delete[] static_cast<char*>(body);
-        close(new_socket);
     }
     close(server_fd);
 }
@@ -571,7 +568,7 @@ void UploadFile(HttpRequestClient& client,std::string ClientPath,std::string Ser
 	}
 	request.headers.insert({"original-path",ClientPath});
 	request.method = "POST";
-	request.url = "192.168.178.101/"+ServerPath;
+	request.url = "192.168.178.102/"+ServerPath;
 	//std::cout << "Client path: " << ClientPath << std::endl;
 	//std::cout << "Server path: " << ServerPath << std::endl;
 	HttpResponse response = client.Send(request);
@@ -597,7 +594,7 @@ void UploadDirectory(HttpRequestClient& client,std::string ClientPath,std::strin
 void DownloadFile(HttpRequestClient& client,std::string& ServerPath) {
 	HttpRequest request;
 	request.method = "GET";
-	request.url = "192.168.178.101/"+ServerPath;
+	request.url = "192.168.178.102/"+ServerPath;
 	HttpResponse response = client.Send(request);
 	std::cout << "DOWNLOAD " << ServerPath << " ";
 	if(response.status_code >= 200 && response.status_code < 300)std::cout << "\x1B[32m";
