@@ -30,4 +30,4 @@ elif(platform.system() == "Linux"):
 	compiler_c = "gcc"
 	assembler = "as"
 	linker = "g++"
-	args_linker = "-Llib/ -lc -lstdc++ -g -rdynamic -lssl -lcrypto -lmariadb"
+	args_linker = "-Llib/ -lc -lstdc++ -g -rdynamic -lssl -lfmt -lbacktrace -lcrypto -lmariadb"
