@@ -1,0 +1,21 @@
+{
+	"async": {
+		"prefix": "async",
+		"body": [
+			"async([]{",
+			"\t$0",
+			"});"
+		]
+	},
+	"delayed async": {
+		"prefix": [
+			"async",
+			"timeout"
+		],
+		"body": [
+			"async([]{",
+			"\t$0",
+			"});"
+		]
+	}
+}

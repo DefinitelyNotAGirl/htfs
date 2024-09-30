@@ -1,0 +1,23 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Compile C++ Server",
+			"command": "python",
+			"args": ["run_debug.py"],
+			"problemMatcher": "$gcc",
+			"type": "shell",
+			"icon": {
+				"id": "server"
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"showReuseMessage": false,
+				"clear": true
+			}
+		}
+	]
+}

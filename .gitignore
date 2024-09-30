@@ -1,0 +1,13 @@
+htfs
+.DS_Store
+server
+server.crt
+server.key
+test_1.jpg
+test_1.jpg.tags
+*.o
+*.d
+*.o.deps.json
+build/
+srv/
+*.pyc
