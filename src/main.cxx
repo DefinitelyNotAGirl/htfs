@@ -574,9 +574,9 @@ void UploadFile(HttpRequestClient& client,std::string ClientPath,std::string Ser
 	request.url = std::string("192.168.178.102/")+std::string(ServerPath);
 	//std::cout << "Client path: " << ClientPath << std::endl;
 	std::cout << "\x1B[34mUPLOAD \x1B[35m" << ClientPath << "\x1B[0m...";
-	std::cout << "cock" << std::endl;
+	//std::cout << "cock" << std::endl;
 	HttpResponse response = client.Send(request);
-	std::cout << "pussy" << std::endl;
+	//std::cout << "pussy" << std::endl;
 	std::cout << "\b\b\b ";
 	if(response.status_code >= 200 && response.status_code < 300)std::cout << "\x1B[32m";
 	else if(response.status_code >= 300 && response.status_code < 400)std::cout << "\x1B[33m";

@@ -84,16 +84,16 @@ public:
 	    char buffer[8192];
 	    int bytes_read = 0;
 	    std::ostringstream response_stream;
-		std::cout << "sockfd: " << sockfd << std::endl;
-		std::cout << "buffer: " << buffer << std::endl;
-		std::cout << "sizeof(buffer): " << sizeof(buffer) << std::endl;
+		//std::cout << "sockfd: " << sockfd << std::endl;
+		//std::cout << "buffer: " << buffer << std::endl;
+		//std::cout << "sizeof(buffer): " << sizeof(buffer) << std::endl;
 	    while ((bytes_read = read(sockfd, buffer, sizeof(buffer))) > 0) {
-			std::cout << "bytes read: " << bytes_read << std::endl;
+			//std::cout << "bytes read: " << bytes_read << std::endl;
 	        response_stream.write(buffer, bytes_read);
 	    }
-		std::cout << "bytes read: " << bytes_read << std::endl;
+		//std::cout << "bytes read: " << bytes_read << std::endl;
 	    close(sockfd);
-		std::cout << "debug 1" << std::endl;
+		//std::cout << "debug 1" << std::endl;
 	    // Parse the response
 	    std::string response_str = response_stream.str();
 	    HttpResponse response;
