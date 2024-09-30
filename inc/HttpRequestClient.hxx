@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <async.hxx>
+#include <sys/wait.h>
 class HttpRequestClient {
 	virtual u16 DefaultPort(){return 80;}
 	void parse_url(const std::string& url, std::string& host, int& port, std::string& path) {
