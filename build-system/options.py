@@ -26,7 +26,7 @@ if(platform.system() == "Darwin"):
 	args_linker = "-Llib/ -lc -lstdc++ -g -rdynamic -L/opt/homebrew/opt/openssl@3/lib -L/opt/homebrew/opt/mariadb-connector-c/lib/mariadb -L/opt/homebrew/lib -lssl -lfmt -lcrypto -lmariadb"
 elif(platform.system() == "Linux"):
 	compiler_cxx = "g++"
-	args_cxx = "-std=c++20 -g -Wno-write-strings -rdynamic -pedantic -Wno-multichar -Wunreachable-code -Wno-literal-suffix -Wno-pointer-arith -fpermissive -lfmt -Iinc/ -g -c -fdiagnostics-color -Dplatform_linux"
+	args_cxx = "-std=c++20 -g -Wno-write-strings -rdynamic -pedantic -Wno-multichar -Wunreachable-code -fpermissive -Wno-literal-suffix -Wno-pointer-arith -fpermissive -lfmt -Iinc/ -g -c -fdiagnostics-color -Dplatform_linux"
 	compiler_c = "gcc"
 	assembler = "as"
 	linker = "g++"
